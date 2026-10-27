@@ -1,27 +1,18 @@
 from django.db import models
- 
-# Copia recortada del models.py oficial (app funciones_app).
 
-# CLASES DE APOYO (copia fiel, NO se editan; al integrar se reemplazan por las oficiales):
-#   Sucursal, Cliente, Trabajador, ProductoInsumo, Reserva
-
-# CLASES DE NUESTRO MODULO (Servicios y Ventas):
-#   Servicio, Atencion, DetalleAtencion, Venta, DetalleVenta, Pago
- 
 class Sucursal(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=200)
     telefono = models.CharField(max_length=20, blank=True, null=True)
- 
+
     def __str__(self):
         return self.nombre
- 
+
     class Meta:
         db_table = "funciones_app_sucursal"
         verbose_name = "Sucursal"
         verbose_name_plural = "Sucursales"
- 
- 
+
 class Cliente(models.Model):
     rut = models.CharField(max_length=12, unique=True)
     nombre = models.CharField(max_length=100)
@@ -29,16 +20,15 @@ class Cliente(models.Model):
     correo = models.EmailField(max_length=150, unique=True, blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
- 
+
     def __str__(self):
         return f"{self.nombre} {self.apellido or ''} ({self.rut})"
- 
+
     class Meta:
         db_table = "funciones_app_cliente"
         verbose_name = "Cliente"
         verbose_name_plural = "Clientes"
- 
- 
+
 class Trabajador(models.Model):
     sucursal = models.ForeignKey(
         Sucursal,
@@ -56,16 +46,66 @@ class Trabajador(models.Model):
     modalidad_pago = models.CharField(max_length=50, blank=True, null=True)
     porcentaje_comision = models.PositiveIntegerField(default=0)
     rol = models.CharField(max_length=30, default="Empleado")
- 
+
     def __str__(self):
         return f"{self.nombre} {self.apellido} - {self.rol}"
- 
+
     class Meta:
         db_table = "funciones_app_trabajador"
         verbose_name = "Trabajador"
         verbose_name_plural = "Trabajadores"
- 
- 
+
+class Usuario(models.Model):
+    trabajador = models.OneToOneField(
+        Trabajador,
+        on_delete=models.CASCADE,
+        db_column="trabajador_id",
+        related_name="usuario",
+    )
+    username = models.CharField(max_length=50, unique=True)
+    password_hash = models.CharField(max_length=255)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        db_table = "funciones_app_usuario"
+
+class Asistencia(models.Model):
+    trabajador = models.ForeignKey(
+        Trabajador,
+        on_delete=models.CASCADE,
+        db_column="trabajador_id",
+        related_name="asistencias",
+    )
+    fecha = models.DateField()
+    hora_entrada = models.TimeField()
+    hora_salida = models.TimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Asistencia: {self.trabajador.nombre} ({self.fecha})"
+
+    class Meta:
+        db_table = "funciones_app_asistencia"
+
+class Turno(models.Model):
+    trabajador = models.ForeignKey(
+        Trabajador,
+        on_delete=models.CASCADE,
+        db_column="trabajador_id",
+        related_name="turnos",
+    )
+    fecha = models.DateField()
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    def __str__(self):
+        return f"Turno de {self.trabajador.nombre} - {self.fecha}"
+
+    class Meta:
+        db_table = "funciones_app_turno"
+
 class ProductoInsumo(models.Model):
     nombre = models.CharField(max_length=100)
     categoria = models.CharField(max_length=50, blank=True, null=True)
@@ -75,30 +115,102 @@ class ProductoInsumo(models.Model):
     )
     stock_minimo = models.PositiveIntegerField(default=5)
     es_insumo = models.BooleanField(default=False)
- 
+
     def __str__(self):
         return self.nombre
- 
+
     class Meta:
         db_table = "funciones_app_productoinsumo"
         verbose_name = "Producto o Insumo"
         verbose_name_plural = "Productos e Insumos"
- 
- 
+
+class Inventario(models.Model):
+    sucursal = models.ForeignKey(
+        Sucursal,
+        on_delete=models.CASCADE,
+        db_column="sucursal_id",
+        related_name="inventarios",
+    )
+    producto = models.ForeignKey(
+        ProductoInsumo,
+        on_delete=models.CASCADE,
+        db_column="producto_id",
+        related_name="stocks",
+    )
+    cantidad = models.PositiveIntegerField(default=0)
+    ultima_actualizacion = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.producto.nombre} ({self.cantidad} un.)"
+
+    class Meta:
+        db_table = "funciones_app_inventario"
+
+
+class Proveedor(models.Model):
+    rut = models.CharField(max_length=12, unique=True)
+
+    contacto = models.CharField(max_length=100, blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return self.razon_social
+
+    class Meta:
+        db_table = "funciones_app_proveedor"
+
+
+class FacturaCompra(models.Model):
+    proveedor = models.ForeignKey(
+        Proveedor,
+        on_delete=models.PROTECT,
+        db_column="proveedor_id",
+        related_name="facturas",
+    )
+    fecha = models.DateTimeField(auto_now_add=True)
+    total_factura = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f"Compra #{self.id} - {self.proveedor.razon_social}"
+
+    class Meta:
+        db_table = "funciones_app_facturacompra"
+
+
+class DetalleCompra(models.Model):
+    compra = models.ForeignKey(
+        FacturaCompra,
+        on_delete=models.CASCADE,
+        db_column="compra_id",
+        related_name="detalles",
+    )
+    producto = models.ForeignKey(
+        ProductoInsumo,
+        on_delete=models.PROTECT,
+        db_column="producto_id",
+        related_name="compras_detalle",
+    )
+    cantidad = models.PositiveIntegerField()
+    costo_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        db_table = "funciones_app_detallecompra"
+
+
 class Servicio(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
     precio_base = models.DecimalField(max_digits=10, decimal_places=2)
     duracion_minutos = models.PositiveIntegerField(help_text="Duración en minutos")
     categoria_cliente = models.CharField(max_length=50, blank=True, null=True)
- 
+
     def __str__(self):
         return self.nombre
- 
+
     class Meta:
         db_table = "funciones_app_servicio"
- 
- 
+
 class Reserva(models.Model):
     ESTADOS = [
         ("Pendiente", "Pendiente"),
@@ -131,14 +243,31 @@ class Reserva(models.Model):
     hora_fin = models.TimeField()
     estado = models.CharField(max_length=30, choices=ESTADOS, default="Pendiente")
     origen = models.CharField(max_length=30, blank=True, null=True)
- 
+
     def __str__(self):
         return f"Reserva #{self.id} - {self.cliente.nombre}"
- 
+
     class Meta:
         db_table = "funciones_app_reserva"
- 
- 
+
+class DetalleReserva(models.Model):
+    reserva = models.ForeignKey(
+        Reserva,
+        on_delete=models.CASCADE,
+        db_column="reserva_id",
+        related_name="detalles_reserva",
+    )
+    servicio = models.ForeignKey(
+        Servicio,
+        on_delete=models.PROTECT,
+        db_column="servicio_id",
+        related_name="reservas_incluidas",
+    )
+    precio_reservado = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = "funciones_app_detallereserva"
+
 class Atencion(models.Model):
     reserva = models.OneToOneField(
         Reserva,
@@ -148,24 +277,16 @@ class Atencion(models.Model):
         db_column="reserva_id",
         related_name="atencion",
     )
-    # CAMBIO PROPUESTO: el oficial no tiene trabajador en Atencion.
-    # Sin este campo no se puede calcular el bono por trabajadora.
-    trabajador = models.ForeignKey(
-        Trabajador,
-        on_delete=models.PROTECT,
-        db_column="trabajador_id",
-        related_name="atenciones",
-    )
     fecha = models.DateTimeField(auto_now_add=True)
     observacion = models.TextField(blank=True, null=True)
- 
+
     def __str__(self):
         return f"Atención #{self.id}"
- 
+
     class Meta:
         db_table = "funciones_app_atencion"
- 
- 
+
+
 class DetalleAtencion(models.Model):
     atencion = models.ForeignKey(
         Atencion,
@@ -181,11 +302,11 @@ class DetalleAtencion(models.Model):
     )
     precio_aplicado = models.DecimalField(max_digits=10, decimal_places=2)
     complementario = models.BooleanField(default=False)
- 
+
     class Meta:
         db_table = "funciones_app_detalleatencion"
- 
- 
+
+
 class Venta(models.Model):
     ESTADOS_VENTA = [
         ("Emitida", "Emitida"),
@@ -227,14 +348,13 @@ class Venta(models.Model):
     estado = models.CharField(
         max_length=30, choices=ESTADOS_VENTA, default="Emitida"
     )
- 
+
     def __str__(self):
         return f"Venta #{self.id} - ${self.total}"
- 
+
     class Meta:
         db_table = "funciones_app_venta"
- 
- 
+
 class DetalleVenta(models.Model):
     venta = models.ForeignKey(
         Venta,
@@ -260,11 +380,11 @@ class DetalleVenta(models.Model):
     )
     cantidad = models.PositiveIntegerField(default=1)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
- 
+
     class Meta:
         db_table = "funciones_app_detalleventa"
- 
- 
+
+
 class Pago(models.Model):
     venta = models.ForeignKey(
         Venta,
@@ -275,9 +395,9 @@ class Pago(models.Model):
     monto = models.DecimalField(max_digits=12, decimal_places=2)
     metodo = models.CharField(max_length=30)
     fecha = models.DateTimeField(auto_now_add=True)
- 
+
     def __str__(self):
         return f"Pago ${self.monto} ({self.metodo})"
- 
+
     class Meta:
         db_table = "funciones_app_pago"
