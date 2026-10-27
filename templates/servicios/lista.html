@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load formato %}
+
+{% block titulo %}Servicios · Estética Antonia{% endblock %}
+{% block encabezado %}Administración de Servicios{% endblock %}
+
+{% block topbar_extra %}
+<span class="badge-historico" title="Los servicios no se eliminan: se desactivan para conservar el historial de ventas.">
+  <i data-lucide="info"></i> Servicios Históricos Preservados
+</span>
+{% endblock %}
+
+{% block contenido %}
+<form method="get" class="filtros">
+  <label class="buscador">
+    <i data-lucide="search"></i>
+    <input type="search" name="q" value="{{ q }}" placeholder="Buscar servicios por nombre o categoría...">
+  </label>
+  <select name="categoria" onchange="this.form.submit()">
+    <option value="">Todas las categorías</option>
+    {% for valor, etiqueta in categorias %}
+    <option value="{{ valor }}" {% if valor == categoria %}selected{% endif %}>{{ etiqueta }}</option>
+    {% endfor %}
+  </select>
+  <select name="local" onchange="this.form.submit()">
+    <option value="">Todos los locales</option>
+    {% for s in sucursales %}
+    <option value="{{ s.id }}" {% if s.id|stringformat:"s" == local %}selected{% endif %}>{{ s.nombre }}</option>
+    {% endfor %}
+  </select>
+  <a href="{% url 'admin:funciones_app_servicio_add' %}" class="btn-primario">
+    <i data-lucide="plus"></i> Agregar servicio
+  </a>
+</form>
+
+<div class="tarjeta">
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Servicio</th>
+          <th>Categoría</th>
+          <th>Duración</th>
+          <th>Precio<br>actual</th>
+          <th>Locales</th>
+          <th>Estado</th>
+          <th class="der">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in pagina %}
+        <tr class="{% if not s.activo %}inactivo{% endif %}">
+          <td>
+            <div class="srv-nombre">{{ s.nombre }}</div>
+            <div class="srv-ref">REF: {{ s.codigo }}</div>
+          </td>
+          <td><span class="cat cat-{{ s.categoria|slugify }}">{{ s.get_categoria_display }}</span></td>
+          <td><span class="duracion"><i data-lucide="clock"></i> {{ s.duracion_minutos }} min</span></td>
+          <td class="precio">{{ s.precio_base|clp }}</td>
+          <td>
+            <div class="locales">
+              {% with locales=s.sucursales.all %}
+                {% if total_sucursales and locales|length == total_sucursales %}
+                  <span class="chip">Todas</span>
+                {% else %}
+                  {% for l in locales %}<span class="chip">{{ l.nombre }}</span>{% empty %}<span class="chip">Sin local</span>{% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+          </td>
+          <td>
+            {% if s.activo %}<span class="estado on">Activo</span>{% else %}<span class="estado off">Inactivo</span>{% endif %}
+          </td>
+          <td>
+            <div class="acciones">
+              <button type="button" class="btn-icono" title="Historial de precios (próximamente)" disabled><i data-lucide="history"></i></button>
+              <a href="{% url 'admin:funciones_app_servicio_change' s.id %}" class="btn-icono" title="Editar"><i data-lucide="square-pen"></i></a>
+              <form method="post" action="{% url 'servicios:cambiar_estado' s.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="switch{% if s.activo %} on{% endif %}" role="switch"
+                        aria-checked="{{ s.activo|yesno:'true,false' }}"
+                        title="{% if s.activo %}Desactivar{% else %}Activar{% endif %} servicio"></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="vacio-tabla">No se encontraron servicios con esos filtros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pie-tabla">
+    <span>Mostrando <strong>{{ pagina.object_list|length }}</strong> de {{ pagina.paginator.count }} servicios registrados</span>
+    {% if pagina.paginator.num_pages > 1 %}
+    <nav class="paginacion">
+      {% if pagina.has_previous %}
+        <a href="?{% if filtros %}{{ filtros }}&{% endif %}page={{ pagina.previous_page_number }}" class="pag" aria-label="Anterior"><i data-lucide="chevron-left"></i></a>
+      {% else %}<span class="pag deshabilitado"><i data-lucide="chevron-left"></i></span>{% endif %}
+      {% for n in pagina.paginator.page_range %}
+        <a href="?{% if filtros %}{{ filtros }}&{% endif %}page={{ n }}" class="pag{% if n == pagina.number %} actual{% endif %}">{{ n }}</a>
+      {% endfor %}
+      {% if pagina.has_next %}
+        <a href="?{% if filtros %}{{ filtros }}&{% endif %}page={{ pagina.next_page_number }}" class="pag" aria-label="Siguiente"><i data-lucide="chevron-right"></i></a>
+      {% else %}<span class="pag deshabilitado"><i data-lucide="chevron-right"></i></span>{% endif %}
+    </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

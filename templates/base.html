@@ -1,0 +1,73 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Estética Antonia{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  {% with seccion=request.resolver_match.namespace %}
+  <aside class="sidebar">
+    <div class="marca">
+      <div class="marca-logo"><i data-lucide="gem"></i></div>
+      <div>
+        <div class="marca-nombre">Estética Antonia</div>
+        <div class="marca-sub">Sistema de Gestión</div>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a href="#"><i data-lucide="house"></i> Inicio</a>
+      <a href="#"><i data-lucide="calendar-days"></i> Citas</a>
+      <a href="#"><i data-lucide="users"></i> Clientes</a>
+      <a href="{% url 'servicios:lista' %}" class="{% if seccion == 'servicios' %}activo{% endif %}"><i data-lucide="scissors"></i> Servicios</a>
+      <a href="#"><i data-lucide="contact"></i> Trabajadoras</a>
+      <a href="#"><i data-lucide="store"></i> Locales</a>
+      <a href="#"><i data-lucide="chart-line"></i> Reportes</a>
+      <a href="#"><i data-lucide="shield"></i> Roles y Permisos</a>
+    </nav>
+
+    <div class="usuario">
+      <div class="usuario-info">
+        <div class="avatar">
+          {% if user.is_authenticated %}{{ user.get_full_name|default:user.username|slice:":1"|upper }}{% else %}?{% endif %}
+        </div>
+        <div>
+          <div class="usuario-nombre">{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Invitado{% endif %}</div>
+          <div class="usuario-rol">{% if user.is_superuser %}Administradora{% elif user.is_authenticated %}Usuaria{% else %}Sin sesión{% endif %}</div>
+        </div>
+      </div>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-salir"><i data-lucide="log-out"></i> Cerrar sesión</button>
+      </form>
+      {% else %}
+      <a href="{% url 'admin:login' %}?next={{ request.path }}" class="btn-salir"><i data-lucide="log-in"></i> Iniciar sesión</a>
+      {% endif %}
+    </div>
+  </aside>
+  {% endwith %}
+
+  <div class="contenido">
+    <header class="topbar">
+      <h1>{% block encabezado %}{% endblock %}</h1>
+      <div class="topbar-acciones">
+        {% block topbar_extra %}{% endblock %}
+        <button class="btn-icono campana" type="button" aria-label="Notificaciones">
+          <i data-lucide="bell"></i><span class="punto"></span>
+        </button>
+      </div>
+    </header>
+    <main>
+      {% block contenido %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
+</body>
+</html>

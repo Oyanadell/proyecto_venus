@@ -86,14 +86,35 @@ class ProductoInsumo(models.Model):
  
  
 class Servicio(models.Model):
+    CATEGORIAS = [
+        ("Cabello", "Cabello"),
+        ("Manicura", "Manicura"),
+        ("Estetica Facial", "Estética Facial"),
+        ("Maquillaje", "Maquillaje"),
+    ]
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
     precio_base = models.DecimalField(max_digits=10, decimal_places=2)
     duracion_minutos = models.PositiveIntegerField(help_text="Duración en minutos")
     categoria_cliente = models.CharField(max_length=50, blank=True, null=True)
- 
+    # CAMBIO PROPUESTO: el oficial no tiene estos campos.
+    # Los necesita la pantalla "Administración de Servicios".
+    categoria = models.CharField(max_length=50, choices=CATEGORIAS, default="Cabello")
+    # Un servicio no se borra: se desactiva para preservar el historial de ventas.
+    activo = models.BooleanField(default=True)
+    sucursales = models.ManyToManyField(
+        Sucursal,
+        blank=True,
+        related_name="servicios",
+        help_text="Locales donde se ofrece el servicio",
+    )
+
     def __str__(self):
         return self.nombre
+
+    @property
+    def codigo(self):
+        return f"SRV-{self.id:03d}"
  
     class Meta:
         db_table = "funciones_app_servicio"
