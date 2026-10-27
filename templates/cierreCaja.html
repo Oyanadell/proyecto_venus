@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid mt-4 px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #4a2e35;">Cierre de Caja Diario</h2>
+            <p class="text-muted mb-0">Control operativo y conciliación financiera.</p>
+        </div>
+        <span class="badge bg-warning text-dark px-3 py-2 fw-bold">CAJA EN PROCESO</span>
+    </div>
+
+    <div class="row g-4">
+        <!-- Resumen de Ventas -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h5 class="fw-bold mb-3" style="color: #4a2e35;">Resumen de Ventas Registradas</h5>
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted fw-bold">TOTAL VENTAS BRUTAS</small>
+                            <h3 class="fw-bold text-dark mt-1">${{ total_ventas }}</h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted fw-bold">CANTIDAD DE TRANSACCIONES</small>
+                            <h3 class="fw-bold text-dark mt-1">{{ cantidad_transacciones }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-muted small mb-3">DESGLOSE POR MÉTODO DE PAGO</h6>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>💵 Efectivo</span>
+                        <strong class="text-success">${{ efectivo }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>💳 Tarjeta (Débito/Crédito)</span>
+                        <strong class="text-primary">${{ tarjeta }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>📱 Transferencia / Otros</span>
+                        <strong class="text-info">${{ transferencia }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conciliación de Efectivo -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h5 class="fw-bold mb-3" style="color: #4a2e35;">Conciliación de Efectivo</h5>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Efectivo Inicial:</span>
+                    <strong>$50.000</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Ingresos de Caja (+):</span>
+                    <strong>${{ efectivo }}</strong>
+                </div>
+                <hr>
+                <div class="p-3 rounded-3 text-white mb-3" style="background-color: #2b2b2b;">
+                    <small class="text-muted d-block">EFECTIVO ESPERADO</small>
+                    <h3 class="fw-bold mb-0">${{ efectivo|add:50000 }}</h3>
+                </div>
+                <button type="button" class="btn w-100 text-white fw-bold py-2" style="background-color: #d6517a;">
+                    Confirmar Cierre de Caja
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

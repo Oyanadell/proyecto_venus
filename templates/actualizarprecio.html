@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualización de Precios - Centro Estético Antonia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body style="background-color: #fdf8f9;">
+
+    <!-- Barra de Navegación Unificada -->
+    <div class="navbar-antonia d-flex justify-content-between align-items-center px-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'img/logoAntonia.jpeg' %}" alt="Logo Antonia" style="height: 40px; object-fit: contain;">
+            <a href="#" class="brand-title text-decoration-none">Centro Estético Antonia</a>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <a href="#" class="nav-link-antonia">Dashboard</a>
+            <a href="#" class="nav-link-antonia">Reservas</a>
+            <a href="#" class="nav-link-antonia">Clientes</a>
+            <a href="{% url 'servicios_list' %}" class="nav-link-antonia">Servicios</a>
+            <a href="{% url 'registrar_atencion' %}" class="nav-link-antonia">Registrar Atención</a>
+            <a href="{% url 'ventas_list' %}" class="nav-link-antonia">Historial Ventas</a>
+            <a href="{% url 'actualizar_precios' %}" class="nav-link-antonia active fw-bold">Precios</a>
+            <a href="{% url 'inventario_list' %}" class="nav-link-antonia">Inventario</a>
+            <a href="#" class="nav-link-antonia">Personal</a>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border">Admin</span>
+        </div>
+    </div>
+
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3 class="fw-bold text-uppercase fs-4 mb-0" style="color: #4a2e35;">Actualización de Precios</h3>
+                <small class="text-muted">Gestión de tarifas y política histórica de precios[cite: 7]</small>
+            </div>
+            <a href="{% url 'servicios_list' %}" class="btn btn-outline-secondary btn-sm">✨ Ver Servicios</a>
+        </div>
+
+        <!-- Alerta de Política Histórica -->
+        <div class="alert border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center" style="background-color: #fff9e6; color: #8a6d3b;">
+            <div class="me-3 fs-4">⚠️</div>
+            <div class="small">
+                <strong>Política de Precios Históricos:</strong> Los cambios de precio realizados en esta pantalla no afectarán el valor de citas, atenciones o ventas registradas en fechas anteriores[cite: 7].
+            </div>
+        </div>
+
+        <hr class="text-muted my-3">
+
+        <div class="table-responsive bg-white p-3 rounded-4 border shadow-sm">
+            <table class="table table-antonia align-middle border-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Duración</th>
+                        <th>Precio Actual (CLP)</th>
+                        <th class="text-end">Modificar Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for servicio in servicios %}
+                    <tr>
+                        <td class="fw-bold text-dark">{{ servicio.nombre }}</td>
+                        <td>{{ servicio.duracion_minutos }} min</td>
+                        <td class="fw-bold" style="color: #d67ba8;">${{ servicio.precio_base }}</td>
+                        <td class="text-end">
+                            <form method="POST" action="{% url 'modificar_precio' servicio.id %}" class="d-inline-flex gap-2 justify-content-end">
+                                {% csrf_token %}
+                                <input type="number" name="precio_base" value="{{ servicio.precio_base }}" class="form-control form-control-sm" style="width: 110px;" required>
+                                <button type="submit" class="btn btn-sm text-white fw-bold" style="background-color: #d67ba8;">Actualizar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            No hay servicios disponibles para actualizar precios.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

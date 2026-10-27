@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Atención - Centro Estético Antonia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body style="background-color: #fdf8f9;">
+
+    <!-- Barra de Navegación Unificada -->
+    <div class="navbar-antonia d-flex justify-content-between align-items-center px-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'img/logoAntonia.jpeg' %}" alt="Logo Antonia" style="height: 40px; object-fit: contain;">
+            <a href="#" class="brand-title text-decoration-none">Centro Estético Antonia</a>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <a href="#" class="nav-link-antonia">Dashboard</a>
+            <a href="#" class="nav-link-antonia">Reservas</a>
+            <a href="#" class="nav-link-antonia">Clientes</a>
+            <a href="{% url 'servicios_list' %}" class="nav-link-antonia">Servicios</a>
+            <a href="{% url 'registrar_atencion' %}" class="nav-link-antonia active fw-bold">Registrar Atención</a>
+            <a href="{% url 'ventas_list' %}" class="nav-link-antonia">Historial Ventas</a>
+            <a href="{% url 'actualizar_precios' %}" class="nav-link-antonia">Precios</a>
+            <a href="{% url 'inventario_list' %}" class="nav-link-antonia">Inventario</a>
+            <a href="#" class="nav-link-antonia">Personal</a>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border">Especialista</span>
+        </div>
+    </div>
+
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h3 class="fw-bold text-uppercase fs-4 mb-0" style="color: #4a2e35;">Registrar Nueva Atención</h3>
+                <small class="text-muted">Registro operativo de servicios prestados e ingreso de venta</small>
+            </div>
+            <a href="{% url 'ventas_list' %}" class="btn btn-outline-secondary btn-sm">📋 Ver Historial</a>
+        </div>
+
+        <hr class="text-muted my-3">
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-4">
+                <!-- Columna Izquierda: Datos y Selección -->
+                <div class="col-lg-8">
+                    <div class="card p-4 border-0 shadow-sm rounded-4 mb-4 bg-white">
+                        <h5 class="fw-bold mb-3" style="color: #4a2e35;">1. Datos de la Reserva / Atención</h5>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Seleccionar Cita / Reserva:</label>
+                            {{ form.reserva }}
+                        </div>
+                    </div>
+
+                    <div class="card p-4 border-0 shadow-sm rounded-4 mb-4 bg-white">
+                        <h5 class="fw-bold mb-3" style="color: #4a2e35;">2. Servicios Realizados</h5>
+                        <p class="text-muted small">Marque los servicios prestados durante esta atención:</p>
+                        
+                        <div class="row g-3">
+                            {% for servicio in servicios %}
+                            <div class="col-md-6">
+                                <div class="border p-3 rounded-3 bg-light d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="servicios" value="{{ servicio.id }}" id="serv_{{ servicio.id }}">
+                                            <label class="form-check-label fw-bold" for="serv_{{ servicio.id }}">
+                                                {{ servicio.nombre }}
+                                            </label>
+                                        </div>
+                                        <small class="text-muted d-block ms-4">{{ servicio.duracion_minutos }} min</small>
+                                    </div>
+                                    <span class="fw-bold text-success">${{ servicio.precio_base }}</span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">No hay servicios disponibles.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="card p-4 border-0 shadow-sm rounded-4 bg-white">
+                        <h5 class="fw-bold mb-3" style="color: #4a2e35;">3. Detalles Adicionales y Pago</h5>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Observaciones:</label>
+                            {{ form.observacion }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Método de Pago:</label>
+                            {{ form.metodo_pago }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Resumen -->
+                <div class="col-lg-4">
+                    <div class="card p-4 border-0 shadow-sm rounded-4 bg-white sticky-top" style="top: 20px;">
+                        <h5 class="fw-bold mb-3" style="color: #4a2e35;">Resumen de Atención</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Estado:</span>
+                            <span class="badge bg-warning text-dark fw-bold">En Registro</span>
+                        </div>
+                        <hr>
+                        <button type="submit" class="btn-pink-antonia w-100 py-2 text-center text-white fw-bold border-0 rounded-3">
+                            💾 Guardar Atención y Procesar Venta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
