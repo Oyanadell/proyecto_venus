@@ -21,9 +21,9 @@
             <a href="#" class="nav-link-antonia">Reservas</a>
             <a href="#" class="nav-link-antonia">Clientes</a>
             <a href="{% url 'servicios_list' %}" class="nav-link-antonia active fw-bold">Servicios</a>
+            <a href="{% url 'gestionar_servicios' %}" class="nav-link-antonia">Gestión de servicios</a>
             <a href="{% url 'registrar_atencion' %}" class="nav-link-antonia">Registrar Atención</a>
             <a href="{% url 'ventas_list' %}" class="nav-link-antonia">Historial Ventas</a>
-            <a href="{% url 'actualizar_precios' %}" class="nav-link-antonia">Precios</a>
             <a href="{% url 'inventario_list' %}" class="nav-link-antonia">Inventario</a>
             <a href="#" class="nav-link-antonia">Personal</a>
         </div>
@@ -39,7 +39,7 @@
                 <small class="text-muted">Gestión de tratamientos y servicios ofrecidos en sucursales</small>
             </div>
             <div class="d-flex gap-2">
-                <a href="{% url 'actualizar_precios' %}" class="btn btn-outline-secondary fw-semibold btn-sm px-3" style="border-color: #d67ba8; color: #4a2e35;">
+                <a href="{% url 'gestionar_servicios' %}" class="btn btn-outline-secondary fw-semibold btn-sm px-3" style="border-color: #d67ba8; color: #4a2e35;">
                     💲 Actualizar Precios
                 </a>
                 <a href="{% url 'registrar_atencion' %}" class="btn-pink-antonia">+ Registrar Atención</a>

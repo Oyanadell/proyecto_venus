@@ -1,7 +1,8 @@
 from django.db import transaction
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Sucursal, Inventario, Servicio, DetalleAtencion, Venta, Pago
-from .forms import InventarioForm, AtencionForm
+from .forms import InventarioForm, AtencionForm, ServicioForm
 
 def InventarioList(request, sucursal_id=None):
     sucursales = Sucursal.objects.all()
@@ -71,6 +72,25 @@ def ServicioList(request):
     servicios = Servicio.objects.all()
     return render(request, 'servicioslista.html', {'servicios': servicios})
 
+def GestionarServicios(request, pk=None):
+    """Permite crear servicios y modificar sus datos y precios."""
+    servicio = get_object_or_404(Servicio, pk=pk) if pk is not None else None
+
+    if request.method == 'POST':
+        form = ServicioForm(request.POST, instance=servicio)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'El servicio se guardó correctamente.')
+            return redirect('gestionar_servicios')
+    else:
+        form = ServicioForm(instance=servicio)
+
+    return render(request, 'gestionarservicios.html', {
+        'form': form,
+        'servicio_editando': servicio,
+        'servicios': Servicio.objects.all().order_by('nombre'),
+    })
+
 def RegistrarAtencion(request):
     """Permite registrar una atención asegurando datos para pruebas."""
     if request.method == 'POST':
@@ -115,31 +135,6 @@ def VentaList(request):
     """Muestra el historial general de ventas realizadas."""
     ventas = Venta.objects.all().order_by('-fecha_hora')
     return render(request, 'ventaslista.html', {'ventas': ventas})
-
-def ActualizarPreciosView(request):
-    """Muestra el catálogo de precios actuales y el historial de modificaciones."""
-    query = request.GET.get('q', '')
-    servicios = Servicio.objects.all()
-    if query:
-        servicios = servicios.filter(nombre__icontains=query)
-    
-    context = {
-        'servicios': servicios,
-        'query': query,
-    }
-    return render(request, 'actualizarprecio.html', context)
-
-def ModificarPrecioServicioView(request, pk):
-    """Permite actualizar el precio base de un servicio específico."""
-    servicio = get_object_or_404(Servicio, pk=pk)
-    if request.method == 'POST':
-        nuevo_precio = request.POST.get('precio_base')
-        if nuevo_precio:
-            servicio.precio_base = nuevo_precio
-            servicio.save()
-            return redirect('actualizar_precios')
-            
-    return render(request, 'modificarprecio.html', {'servicio': servicio})
 
 def CierreCajaView(request):
     """Calcula el resumen diario de ventas y desglose por método de pago para el cierre de caja."""
