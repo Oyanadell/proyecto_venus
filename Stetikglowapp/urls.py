@@ -29,8 +29,8 @@ urlpatterns = [
     path('eliminar/<int:pk>/', InventarioDelete, name='inventario_delete'),
     # Grupo 2
     path('servicios/', ServicioList, name='servicios_list'),
+    path('servicios/modificar/', GestionarServicios, name='gestionar_servicios'),
+    path('servicios/modificar/<int:pk>/', GestionarServicios, name='editar_servicio'),
     path('atenciones/registrar/', RegistrarAtencion, name='registrar_atencion'),
     path('ventas/', VentaList, name='ventas_list'),
-    path('servicios/precios/', ActualizarPreciosView, name='actualizar_precios'),
-    path('servicios/precios/modificar/<int:pk>/', ModificarPrecioServicioView, name='modificar_precio'),
 ]
