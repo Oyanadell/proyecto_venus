@@ -1,73 +1,129 @@
-{% load static %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block titulo %}Estética Antonia{% endblock %}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <!-- Fuentes de Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      color: #1f2937;
+      background: #fafafa;
+      display: flex;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ----- Barra lateral ----- */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: #fdf2f8;
+      border-right: 1px solid #fbcfe8;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .marca { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .marca-logo {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: #ec4899;
+      color: white;
+      text-align: center;
+      line-height: 36px;
+      font-size: 18px;
+    }
+    .marca-nombre { font-family: "Playfair Display", serif; font-weight: 700; font-size: 16px; }
+    .marca-sub { font-size: 11px; color: #6b7280; }
+
+    .menu { flex: 1; }
+    .menu a {
+      display: block;
+      padding: 10px 12px;
+      margin-bottom: 4px;
+      border-radius: 8px;
+      color: #4b5563;
+    }
+    .menu a:hover { background: white; }
+    .menu a.activo {
+      background: white;
+      font-weight: 600;
+      color: #1f2937;
+      border-left: 3px solid #ec4899;
+    }
+
+    .usuario { background: white; border: 1px solid #fbcfe8; border-radius: 12px; padding: 12px; }
+    .usuario-nombre { font-weight: 600; font-size: 13px; }
+    .usuario-rol { font-size: 11px; color: #6b7280; margin-bottom: 10px; }
+    .btn-salir {
+      display: block;
+      text-align: center;
+      padding: 8px;
+      border-radius: 8px;
+      background: #fdf2f8;
+      color: #db2777;
+      font-size: 12px;
+    }
+
+    /* ----- Contenido ----- */
+    .contenido { flex: 1; }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      background: white;
+      border-bottom: 1px solid #ececf0;
+    }
+    .topbar h1 { margin: 0; font-family: "Playfair Display", serif; font-size: 20px; }
+    main { padding: 24px; }
+  </style>
+  {% block estilos %}{% endblock %}
 </head>
 <body>
-  {% with seccion=request.resolver_match.namespace %}
+
   <aside class="sidebar">
     <div class="marca">
-      <div class="marca-logo"><i data-lucide="gem"></i></div>
+      <div class="marca-logo">✿</div>
       <div>
         <div class="marca-nombre">Estética Antonia</div>
         <div class="marca-sub">Sistema de Gestión</div>
       </div>
     </div>
 
+    <!-- Por ahora solo "Servicios" tiene página. Los demás se irán agregando. -->
     <nav class="menu">
-      <a href="#"><i data-lucide="house"></i> Inicio</a>
-      <a href="#"><i data-lucide="calendar-days"></i> Citas</a>
-      <a href="#"><i data-lucide="users"></i> Clientes</a>
-      <a href="{% url 'servicios:lista' %}" class="{% if seccion == 'servicios' %}activo{% endif %}"><i data-lucide="scissors"></i> Servicios</a>
-      <a href="#"><i data-lucide="contact"></i> Trabajadoras</a>
-      <a href="#"><i data-lucide="store"></i> Locales</a>
-      <a href="#"><i data-lucide="chart-line"></i> Reportes</a>
-      <a href="#"><i data-lucide="shield"></i> Roles y Permisos</a>
+      <a href="#">🏠 Inicio</a>
+      <a href="#">📅 Citas</a>
+      <a href="#">👥 Clientes</a>
+      <a href="/servicios/" class="activo">✂️ Servicios</a>
+      <a href="#">💁 Trabajadoras</a>
+      <a href="#">🏪 Locales</a>
+      <a href="#">📈 Reportes</a>
+      <a href="#">🛡️ Roles y Permisos</a>
     </nav>
 
+    <!-- Datos de ejemplo: todavía no hay inicio de sesión -->
     <div class="usuario">
-      <div class="usuario-info">
-        <div class="avatar">
-          {% if user.is_authenticated %}{{ user.get_full_name|default:user.username|slice:":1"|upper }}{% else %}?{% endif %}
-        </div>
-        <div>
-          <div class="usuario-nombre">{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% else %}Invitado{% endif %}</div>
-          <div class="usuario-rol">{% if user.is_superuser %}Administradora{% elif user.is_authenticated %}Usuaria{% else %}Sin sesión{% endif %}</div>
-        </div>
-      </div>
-      {% if user.is_authenticated %}
-      <form method="post" action="{% url 'admin:logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn-salir"><i data-lucide="log-out"></i> Cerrar sesión</button>
-      </form>
-      {% else %}
-      <a href="{% url 'admin:login' %}?next={{ request.path }}" class="btn-salir"><i data-lucide="log-in"></i> Iniciar sesión</a>
-      {% endif %}
+      <div class="usuario-nombre">Camila Riquelme</div>
+      <div class="usuario-rol">Administradora</div>
+      <a href="#" class="btn-salir">Cerrar sesión</a>
     </div>
   </aside>
-  {% endwith %}
 
   <div class="contenido">
     <header class="topbar">
       <h1>{% block encabezado %}{% endblock %}</h1>
-      <div class="topbar-acciones">
-        {% block topbar_extra %}{% endblock %}
-        <button class="btn-icono campana" type="button" aria-label="Notificaciones">
-          <i data-lucide="bell"></i><span class="punto"></span>
-        </button>
-      </div>
+      <div>{% block topbar_extra %}{% endblock %} 🔔</div>
     </header>
     <main>
       {% block contenido %}{% endblock %}
     </main>
   </div>
 
-  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-  <script>lucide.createIcons();</script>
 </body>
 </html>

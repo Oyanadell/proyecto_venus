@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block titulo %}{% if servicio %}Editar{% else %}Agregar{% endif %} servicio · Estética Antonia{% endblock %}
+{% block encabezado %}{% if servicio %}Editar servicio{% else %}Agregar servicio{% endif %}{% endblock %}
+
+{% block estilos %}
+<style>
+  .tarjeta { background: white; border: 1px solid #ececf0; border-radius: 12px; padding: 24px; max-width: 520px; }
+  .campo { margin-bottom: 16px; }
+  .campo label { display: block; font-weight: 600; margin-bottom: 6px; }
+  .campo input[type="text"], .campo input[type="number"], .campo select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #ececf0;
+    border-radius: 10px;
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  .locales label { display: block; font-weight: 400; margin-bottom: 4px; }
+  .btn-rosa {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #ec4899;
+    color: white;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .cancelar { margin-left: 12px; color: #6b7280; }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+  <!-- Este formulario sirve para agregar (servicio vacío) y para editar (servicio con datos).
+       Sin "action", se envía a la misma dirección en la que estás. -->
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="campo">
+      <label for="nombre">Nombre del servicio</label>
+      <input type="text" id="nombre" name="nombre" placeholder="Ej: Manicure semipermanente" value="{{ servicio.nombre }}" required>
+    </div>
+
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria">
+        <option value="Manicure" {% if servicio.categoria == "Manicure" %}selected{% endif %}>Manicure</option>
+        <option value="Pedicure" {% if servicio.categoria == "Pedicure" %}selected{% endif %}>Pedicure</option>
+        <option value="Depilación" {% if servicio.categoria == "Depilación" %}selected{% endif %}>Depilación</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="duracion">Duración (minutos)</label>
+      <input type="number" id="duracion" name="duracion" min="1" value="{{ servicio.duracion_minutos }}" required>
+    </div>
+
+    <div class="campo">
+      <label for="precio">Precio (CLP)</label>
+      <input type="number" id="precio" name="precio" min="0" value="{{ servicio.precio_base|floatformat:"0" }}" required>
+    </div>
+
+    <div class="campo locales">
+      <label>Locales donde se ofrece</label>
+      {% for s in sucursales %}
+        <label><input type="checkbox" name="sucursales" value="{{ s.id }}" {% if s.id in ids_locales %}checked{% endif %}> {{ s.nombre }}</label>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn-rosa">Guardar servicio</button>
+    <a href="{% url 'lista_servicios' %}" class="cancelar">Cancelar</a>
+  </form>
+</div>
+{% endblock %}
