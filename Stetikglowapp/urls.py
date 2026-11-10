@@ -33,4 +33,6 @@ urlpatterns = [
     path('servicios/modificar/<int:pk>/', GestionarServicios, name='editar_servicio'),
     path('atenciones/registrar/', RegistrarAtencion, name='registrar_atencion'),
     path('ventas/', VentaList, name='ventas_list'),
+    path('caja/', CierreCajaView, name='cierre_caja'),
+    path('caja/venta/<int:pk>/voucher/', VoucherVentaView, name='voucher_venta'),
 ]

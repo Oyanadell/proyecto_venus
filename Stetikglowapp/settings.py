@@ -94,3 +94,6 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+VOUCHER_RAZON_SOCIAL = "Centro Estético Antonia (dato de prueba)"
+VOUCHER_RUT_COMERCIO = "Pendiente de configurar"

@@ -1,74 +1,227 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container-fluid mt-4 px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-1" style="color: #4a2e35;">Cierre de Caja Diario</h2>
-            <p class="text-muted mb-0">Control operativo y conciliación financiera.</p>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja - Centro Estético Antonia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body style="background-color: #fdf8f9;">
+    <div class="navbar-antonia d-flex justify-content-between align-items-center px-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'img/logoAntonia.jpeg' %}" alt="Logo Antonia" style="height: 40px; object-fit: contain;">
+            <a href="{% url 'inventario_list' %}" class="brand-title text-decoration-none">Centro Estético Antonia</a>
         </div>
-        <span class="badge bg-warning text-dark px-3 py-2 fw-bold">CAJA EN PROCESO</span>
+        <div class="d-flex align-items-center gap-3">
+            <a href="#" class="nav-link-antonia">Dashboard</a>
+            <a href="#" class="nav-link-antonia">Reservas</a>
+            <a href="#" class="nav-link-antonia">Clientes</a>
+            <a href="{% url 'servicios_list' %}" class="nav-link-antonia">Servicios</a>
+            <a href="{% url 'gestionar_servicios' %}" class="nav-link-antonia">Gestión de servicios</a>
+            <a href="{% url 'registrar_atencion' %}" class="nav-link-antonia">Registrar Atención</a>
+            <a href="{% url 'ventas_list' %}" class="nav-link-antonia">Historial Ventas</a>
+            <a href="{% url 'cierre_caja' %}" class="nav-link-antonia active fw-bold">Caja</a>
+            <a href="{% url 'inventario_list' %}" class="nav-link-antonia">Inventario</a>
+            <a href="#" class="nav-link-antonia">Personal</a>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-light text-dark border">Admin</span>
+        </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Resumen de Ventas -->
-        <div class="col-md-7">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <h5 class="fw-bold mb-3" style="color: #4a2e35;">Resumen de Ventas Registradas</h5>
-                <div class="row mb-4">
-                    <div class="col-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted fw-bold">TOTAL VENTAS BRUTAS</small>
-                            <h3 class="fw-bold text-dark mt-1">${{ total_ventas }}</h3>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted fw-bold">CANTIDAD DE TRANSACCIONES</small>
-                            <h3 class="fw-bold text-dark mt-1">{{ cantidad_transacciones }}</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <h6 class="fw-bold text-muted small mb-3">DESGLOSE POR MÉTODO DE PAGO</h6>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>💵 Efectivo</span>
-                        <strong class="text-success">${{ efectivo }}</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>💳 Tarjeta (Débito/Crédito)</span>
-                        <strong class="text-primary">${{ tarjeta }}</strong>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>📱 Transferencia / Otros</span>
-                        <strong class="text-info">${{ transferencia }}</strong>
-                    </li>
-                </ul>
+    <main class="container my-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1" style="color: #4a2e35;">Caja</h1>
+                <p class="text-muted mb-0">
+                    Ventas pagadas del {{ fecha_inicio|date:"d/m/Y" }} al {{ fecha_fin|date:"d/m/Y" }}.
+                </p>
             </div>
         </div>
 
-        <!-- Conciliación de Efectivo -->
-        <div class="col-md-5">
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <h5 class="fw-bold mb-3" style="color: #4a2e35;">Conciliación de Efectivo</h5>
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Efectivo Inicial:</span>
-                    <strong>$50.000</strong>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Ingresos de Caja (+):</span>
-                    <strong>${{ efectivo }}</strong>
-                </div>
-                <hr>
-                <div class="p-3 rounded-3 text-white mb-3" style="background-color: #2b2b2b;">
-                    <small class="text-muted d-block">EFECTIVO ESPERADO</small>
-                    <h3 class="fw-bold mb-0">${{ efectivo|add:50000 }}</h3>
-                </div>
-                <button type="button" class="btn w-100 text-white fw-bold py-2" style="background-color: #d6517a;">
-                    Confirmar Cierre de Caja
-                </button>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <section class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3" style="color: #4a2e35;">Filtros y búsqueda</h2>
+                <form method="get" class="row g-3 align-items-end">
+                    {% for error in form.non_field_errors %}
+                        <div class="col-12"><div class="text-danger small">{{ error }}</div></div>
+                    {% endfor %}
+                    <div class="col-12 col-md-6 col-xl-2">
+                        <label class="form-label" for="{{ form.periodo.id_for_label }}">Período</label>
+                        {{ form.periodo }}
+                        {% for error in form.periodo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-2">
+                        <label class="form-label" for="{{ form.fecha.id_for_label }}">{{ form.fecha.label }}</label>
+                        {{ form.fecha }}
+                        {% for error in form.fecha.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <label class="form-label" for="{{ form.trabajador.id_for_label }}">Trabajadora</label>
+                        {{ form.trabajador }}
+                        {% for error in form.trabajador.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-2">
+                        <label class="form-label" for="{{ form.sucursal.id_for_label }}">Sucursal</label>
+                        {{ form.sucursal }}
+                        {% for error in form.sucursal.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 col-md-8 col-xl-3">
+                        <label class="form-label" for="{{ form.buscar.id_for_label }}">{{ form.buscar.label }}</label>
+                        {{ form.buscar }}
+                        {% for error in form.buscar.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+                    <div class="col-12 d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn-pink-antonia border-0">Aplicar filtros</button>
+                        <a href="{% url 'cierre_caja' %}" class="btn btn-outline-secondary">Limpiar</a>
+                    </div>
+                </form>
             </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+        </section>
+
+        <section class="row g-3 mb-4" aria-label="Resumen del período">
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="small text-muted fw-semibold">VENTAS DEL PERÍODO</div>
+                        <div class="h3 fw-bold mt-2 mb-0">${{ total_ventas|floatformat:0 }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="small text-muted fw-semibold">COMISIONES CALCULADAS</div>
+                        <div class="h3 fw-bold mt-2 mb-0">${{ comision_total|floatformat:0 }}</div>
+                        <div class="small text-muted">Según el porcentaje de cada trabajadora.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="small text-muted fw-semibold">VENTAS PAGADAS</div>
+                        <div class="h3 fw-bold mt-2 mb-0">{{ cantidad_transacciones }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3" style="color: #4a2e35;">Resumen por trabajadora</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Trabajadora</th><th class="text-end">Comisión</th><th class="text-end">Ventas</th><th class="text-end">Total vendido</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for fila in resumen_personal %}
+                                <tr>
+                                    <td>{{ fila.nombre }} <span class="text-muted small">({{ fila.porcentaje }}%)</span></td>
+                                    <td class="text-end">${{ fila.comision|floatformat:0 }}</td>
+                                    <td class="text-end">{{ fila.ventas }}</td>
+                                    <td class="text-end">${{ fila.total|floatformat:0 }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4" class="text-center text-muted py-3">No hay ventas para mostrar en este período.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3" style="color: #4a2e35;">Desglose por medio de pago</h2>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr><th>Medio de pago</th><th class="text-end">Total</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in pagos %}
+                                <tr><td>{{ pago.metodo }}</td><td class="text-end">${{ pago.subtotal|floatformat:0 }}</td></tr>
+                            {% empty %}
+                                <tr><td colspan="2" class="text-center text-muted py-3">No hay pagos en este período.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3" style="color: #4a2e35;">Ventas</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th><th>Venta</th><th>Clienta</th><th>Trabajadora</th>
+                                <th>Sucursal</th><th class="text-end">Total</th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venta in ventas %}
+                                <tr>
+                                    <td>{{ venta.fecha_hora|date:"d/m/Y H:i" }}</td>
+                                    <td>#{{ venta.id }}</td>
+                                    <td>{{ venta.cliente|default:"Clienta frecuente" }}</td>
+                                    <td>{{ venta.empleado|default:"Sin asignar" }}</td>
+                                    <td>{{ venta.sucursal }}</td>
+                                    <td class="text-end fw-semibold">${{ venta.total|floatformat:0 }}</td>
+                                    <td class="text-end"><a href="{% url 'voucher_venta' venta.id %}" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener">Voucher</a></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No hay ventas pagadas para estos filtros.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-3" style="color: #4a2e35;">Servicios vendidos</h2>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th><th>Venta</th><th>Servicio</th><th>Trabajadora</th>
+                                <th>Sucursal</th><th class="text-end">Cantidad</th><th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle in servicios_vendidos %}
+                                <tr>
+                                    <td>{{ detalle.fecha|date:"d/m/Y H:i" }}</td>
+                                    <td><a href="{% url 'voucher_venta' detalle.venta.id %}" target="_blank" rel="noopener">#{{ detalle.venta.id }}</a></td>
+                                    <td>{{ detalle.servicio.nombre }}</td>
+                                    <td>{{ detalle.trabajador|default:"Sin asignar" }}</td>
+                                    <td>{{ detalle.sucursal }}</td>
+                                    <td class="text-end">{{ detalle.cantidad }}</td>
+                                    <td class="text-end">${{ detalle.subtotal|floatformat:0 }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="7" class="text-center text-muted py-4">No hay servicios vendidos para estos filtros.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="{% static 'funciones.js' %}"></script>
+</body>
+</html>

@@ -20,7 +20,7 @@
             <a href="#" class="nav-link-antonia">Dashboard</a>
             <a href="#" class="nav-link-antonia">Reservas</a>
             <a href="#" class="nav-link-antonia">Clientes</a>
-            <a href="#" class="nav-link-antonia">Cierre de Caja</a>
+            <a href="{% url 'cierre_caja' %}" class="nav-link-antonia">Caja</a>
             <a href="{% url 'inventario_list' %}" class="nav-link-antonia active fw-bold">Inventario</a>
             <a href="#" class="nav-link-antonia">Personal</a>
         </div>
@@ -173,6 +173,6 @@
 
     <!-- Bootstrap 5 JS Bundle (Requerido para el desplegable) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'JS/funciones.js' %}"></script>
+    <script src="{% static 'funciones.js' %}"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Inventario, Atencion, Servicio, Venta, Pago
+from .models import Inventario, Atencion, Servicio, Sucursal, Trabajador
 
 class InventarioForm(forms.ModelForm):
     class Meta:
@@ -41,3 +41,44 @@ class AtencionForm(forms.ModelForm):
             "reserva": forms.Select(attrs={"class": "form-control"}),
             "observacion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
+
+
+class CajaFiltroForm(forms.Form):
+    PERIODOS = [
+        ("diario", "Día"),
+        ("semanal", "Semana"),
+        ("mensual", "Mes (26 al 25)"),
+    ]
+
+    periodo = forms.ChoiceField(
+        choices=PERIODOS,
+        required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    fecha = forms.DateField(
+        required=False,
+        label="Fecha de referencia",
+        widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+    )
+    trabajador = forms.ModelChoiceField(
+        queryset=Trabajador.objects.order_by("nombre", "apellido"),
+        required=False,
+        empty_label="Todo el personal",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    sucursal = forms.ModelChoiceField(
+        queryset=Sucursal.objects.order_by("nombre"),
+        required=False,
+        empty_label="Todas las sucursales",
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    buscar = forms.CharField(
+        required=False,
+        label="Buscar ventas o servicios",
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Cliente, servicio, trabajador, local o venta",
+            }
+        ),
+    )
