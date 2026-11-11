@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'funciones_app',  # modelos compartidos (base de datos de todos los grupos)
+    'servicios',      # Grupo 2: administración de servicios
+    'ventas',         # Grupo 2: ventas
 ]
 
 MIDDLEWARE = [

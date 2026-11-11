@@ -204,6 +204,10 @@ class Servicio(models.Model):
     precio_base = models.DecimalField(max_digits=10, decimal_places=2)
     duracion_minutos = models.PositiveIntegerField(help_text="Duración en minutos")
     categoria_cliente = models.CharField(max_length=50, blank=True, null=True)
+    # Campos agregados por el módulo Servicios (pantalla "Administración de Servicios"):
+    categoria = models.CharField(max_length=50, default="Manicure")  # Manicure, Pedicure o Depilación
+    activo = models.BooleanField(default=True)  # en vez de borrar un servicio, se marca como inactivo
+    sucursales = models.ManyToManyField(Sucursal, blank=True)  # locales donde se ofrece el servicio
 
     def __str__(self):
         return self.nombre

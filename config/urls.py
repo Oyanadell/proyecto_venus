@@ -2,12 +2,15 @@
 Rutas (URLs) principales del proyecto Centro Estético Antonia.
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from funciones_app.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Grupo 2: Servicios (todas sus rutas están en servicios/urls.py)
+    path('servicios/', include('servicios.urls')),
 
     # Inventario
     path('', InventarioList, name='inventario_list'),
@@ -18,10 +21,7 @@ urlpatterns = [
     path('editar/<int:pk>/', InventarioUpdate, name='inventario_update'),
     path('eliminar/<int:pk>/', InventarioDelete, name='inventario_delete'),
 
-    # Grupo 2: Servicios y Ventas
-    path('servicios/', ServicioList, name='servicios_list'),
-    path('servicios/modificar/', GestionarServicios, name='gestionar_servicios'),
-    path('servicios/modificar/<int:pk>/', GestionarServicios, name='editar_servicio'),
+    # Grupo 2: Ventas
     path('atenciones/registrar/', RegistrarAtencion, name='registrar_atencion'),
     path('ventas/', VentaList, name='ventas_list'),
     path('caja/', CierreCajaView, name='cierre_caja'),

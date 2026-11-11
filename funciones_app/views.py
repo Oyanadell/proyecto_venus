@@ -18,7 +18,7 @@ from .models import (
     Trabajador,
     Venta,
 )
-from .forms import AtencionForm, CajaFiltroForm, InventarioForm, ServicioForm
+from .forms import AtencionForm, CajaFiltroForm, InventarioForm
 
 def InventarioList(request, sucursal_id=None):
     sucursales = Sucursal.objects.all()
@@ -81,35 +81,13 @@ def PlanInventarioCreate(request):
         return redirect('plan_inventario')
     return render(request, 'planinventarioform.html', {'sucursales': sucursales, 'titulo': 'Crear Nuevo Plan de Inventario'})
 
-# --- Módulo de Servicios y Ventas ---
-
-def ServicioList(request):
-    """Muestra el catálogo de servicios estéticos disponibles."""
-    servicios = Servicio.objects.all()
-    return render(request, 'servicioslista.html', {'servicios': servicios})
-
-def GestionarServicios(request, pk=None):
-    """Permite crear servicios y modificar sus datos y precios."""
-    servicio = get_object_or_404(Servicio, pk=pk) if pk is not None else None
-
-    if request.method == 'POST':
-        form = ServicioForm(request.POST, instance=servicio)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'El servicio se guardó correctamente.')
-            return redirect('gestionar_servicios')
-    else:
-        form = ServicioForm(instance=servicio)
-
-    return render(request, 'gestionarservicios.html', {
-        'form': form,
-        'servicio_editando': servicio,
-        'servicios': Servicio.objects.all().order_by('nombre'),
-    })
+# --- Módulo de Ventas ---
+# (La administración de servicios ahora está en la app "servicios": servicios/views.py)
 
 def RegistrarAtencion(request):
     """Registra una atención con uno o más servicios en una sola venta."""
-    servicios = Servicio.objects.all().order_by("nombre")
+    # Solo se pueden vender servicios activos
+    servicios = Servicio.objects.filter(activo=True).order_by("nombre")
     servicios_ids = []
     if request.method == 'POST':
         form = AtencionForm(request.POST)
@@ -157,10 +135,10 @@ def RegistrarAtencion(request):
         form = AtencionForm()
 
         # SI NO HAY SERVICIOS CREADOS, CREAMOS UNOS DE PRUEBA AUTOMÁTICAMENTE
-        if not servicios.exists():
+        if not Servicio.objects.exists():
             Servicio.objects.create(nombre="Manicure Permanente", precio_base=18500, duracion_minutos=45, descripcion="Esmaltado permanente con diseño base.")
             Servicio.objects.create(nombre="Limpieza Facial Profunda", precio_base=35000, duracion_minutos=60, descripcion="Exfoliación e hidratación profunda.")
-            servicios = Servicio.objects.all().order_by("nombre")
+            servicios = Servicio.objects.filter(activo=True).order_by("nombre")
 
     context = {
         'form': form,
