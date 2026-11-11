@@ -20,8 +20,7 @@
             <a href="#" class="nav-link-antonia">Dashboard</a>
             <a href="#" class="nav-link-antonia">Reservas</a>
             <a href="#" class="nav-link-antonia">Clientes</a>
-            <a href="{% url 'servicios_list' %}" class="nav-link-antonia">Servicios</a>
-            <a href="{% url 'gestionar_servicios' %}" class="nav-link-antonia">Gestión de servicios</a>
+            <a href="{% url 'lista_servicios' %}" class="nav-link-antonia">Servicios</a>
             <a href="{% url 'registrar_atencion' %}" class="nav-link-antonia active fw-bold">Registrar Atención</a>
             <a href="{% url 'ventas_list' %}" class="nav-link-antonia">Historial Ventas</a>
             <a href="{% url 'cierre_caja' %}" class="nav-link-antonia">Caja</a>
@@ -53,7 +52,7 @@
             {% endif %}
             {% if form.errors %}
                 <div class="alert alert-danger" role="alert">
-                    Revisa los datos de la reserva y el método de pago antes de continuar.
+                    Revisa los datos de la reserva, la trabajadora y el método de pago antes de continuar.
                 </div>
             {% endif %}
             <div class="row g-4">
@@ -64,6 +63,13 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold text-secondary">Seleccionar Cita / Reserva:</label>
                             {{ form.reserva }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Trabajadora que realizó la atención:</label>
+                            {{ form.trabajador }}
+                            {% for error in form.trabajador.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
 

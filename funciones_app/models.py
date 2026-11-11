@@ -204,6 +204,10 @@ class Servicio(models.Model):
     precio_base = models.DecimalField(max_digits=10, decimal_places=2)
     duracion_minutos = models.PositiveIntegerField(help_text="Duración en minutos")
     categoria_cliente = models.CharField(max_length=50, blank=True, null=True)
+    # Campos agregados por el módulo Servicios (pantalla "Administración de Servicios"):
+    categoria = models.CharField(max_length=50, default="Manicure")  # Manicure, Pedicure o Depilación
+    activo = models.BooleanField(default=True)  # en vez de borrar un servicio, se marca como inactivo
+    sucursales = models.ManyToManyField(Sucursal, blank=True)  # locales donde se ofrece el servicio
 
     def __str__(self):
         return self.nombre
@@ -276,6 +280,16 @@ class Atencion(models.Model):
         blank=True,
         db_column="reserva_id",
         related_name="atencion",
+    )
+    # Trabajadora que realizó la atención (se usa para la venta y la comisión).
+    # null=True solo para que la migración funcione con atenciones antiguas;
+    # el formulario de "Registrar atención" la pide siempre como obligatoria.
+    trabajador = models.ForeignKey(
+        Trabajador,
+        on_delete=models.PROTECT,
+        null=True,
+        db_column="trabajador_id",
+        related_name="atenciones",
     )
     fecha = models.DateTimeField(auto_now_add=True)
     observacion = models.TextField(blank=True, null=True)

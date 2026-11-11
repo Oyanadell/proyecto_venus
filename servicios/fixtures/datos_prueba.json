@@ -1,0 +1,210 @@
+[
+  {
+    "model": "funciones_app.sucursal",
+    "pk": 1,
+    "fields": {
+      "nombre": "Providencia",
+      "direccion": "Av. Providencia 1234"
+    }
+  },
+  {
+    "model": "funciones_app.sucursal",
+    "pk": 2,
+    "fields": {
+      "nombre": "Las Condes",
+      "direccion": "Av. Apoquindo 4500"
+    }
+  },
+  {
+    "model": "funciones_app.sucursal",
+    "pk": 3,
+    "fields": {
+      "nombre": "Vitacura",
+      "direccion": "Av. Vitacura 3200"
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 1,
+    "fields": {
+      "nombre": "Manicure Tradicional",
+      "categoria": "Manicure",
+      "duracion_minutos": 45,
+      "precio_base": "12000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 2,
+    "fields": {
+      "nombre": "Manicure Permanente",
+      "categoria": "Manicure",
+      "duracion_minutos": 60,
+      "precio_base": "18500",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 3,
+    "fields": {
+      "nombre": "Manicure Spa",
+      "categoria": "Manicure",
+      "duracion_minutos": 75,
+      "precio_base": "20000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 4,
+    "fields": {
+      "nombre": "Esmaltado Tradicional",
+      "categoria": "Manicure",
+      "duracion_minutos": 30,
+      "precio_base": "9000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 5,
+    "fields": {
+      "nombre": "Pedicure Tradicional",
+      "categoria": "Pedicure",
+      "duracion_minutos": 60,
+      "precio_base": "15000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 6,
+    "fields": {
+      "nombre": "Pedicure Spa",
+      "categoria": "Pedicure",
+      "duracion_minutos": 75,
+      "precio_base": "22000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 7,
+    "fields": {
+      "nombre": "Pedicure Permanente",
+      "categoria": "Pedicure",
+      "duracion_minutos": 75,
+      "precio_base": "24000",
+      "activo": false,
+      "sucursales": [
+        2
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 8,
+    "fields": {
+      "nombre": "Depilación de Cejas",
+      "categoria": "Depilación",
+      "duracion_minutos": 20,
+      "precio_base": "7000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 9,
+    "fields": {
+      "nombre": "Depilación de Axilas",
+      "categoria": "Depilación",
+      "duracion_minutos": 20,
+      "precio_base": "8000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 10,
+    "fields": {
+      "nombre": "Depilación Piernas Completas",
+      "categoria": "Depilación",
+      "duracion_minutos": 60,
+      "precio_base": "25000",
+      "activo": true,
+      "sucursales": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 11,
+    "fields": {
+      "nombre": "Depilación Bikini",
+      "categoria": "Depilación",
+      "duracion_minutos": 30,
+      "precio_base": "14000",
+      "activo": true,
+      "sucursales": [
+        1,
+        3
+      ]
+    }
+  },
+  {
+    "model": "funciones_app.servicio",
+    "pk": 12,
+    "fields": {
+      "nombre": "Depilación Rostro Completo",
+      "categoria": "Depilación",
+      "duracion_minutos": 30,
+      "precio_base": "12000",
+      "activo": false,
+      "sucursales": [
+        3
+      ]
+    }
+  }
+]
