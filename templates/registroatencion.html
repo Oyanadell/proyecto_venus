@@ -52,7 +52,7 @@
             {% endif %}
             {% if form.errors %}
                 <div class="alert alert-danger" role="alert">
-                    Revisa los datos de la reserva y el método de pago antes de continuar.
+                    Revisa los datos de la reserva, la trabajadora y el método de pago antes de continuar.
                 </div>
             {% endif %}
             <div class="row g-4">
@@ -63,6 +63,13 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold text-secondary">Seleccionar Cita / Reserva:</label>
                             {{ form.reserva }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-secondary">Trabajadora que realizó la atención:</label>
+                            {{ form.trabajador }}
+                            {% for error in form.trabajador.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
 

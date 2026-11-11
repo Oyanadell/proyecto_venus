@@ -121,10 +121,14 @@ def RegistrarAtencion(request):
                     )
                     total_venta += precio
 
+                # La venta queda a nombre de la trabajadora que hizo la atención
+                # (así la caja calcula bien su comisión). Si no hay reserva,
+                # se usa la sucursal de la trabajadora.
+                trabajador = atencion.trabajador
                 venta = Venta.objects.create(
                     cliente=getattr(reserva, 'cliente', None),
-                    empleado=getattr(reserva, 'trabajador', None),
-                    sucursal=getattr(reserva, 'sucursal', None),
+                    empleado=trabajador,
+                    sucursal=reserva.sucursal if reserva else trabajador.sucursal,
                     atencion=atencion,
                     total=total_venta,
                     estado='Pagada',

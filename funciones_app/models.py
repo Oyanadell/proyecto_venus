@@ -281,6 +281,16 @@ class Atencion(models.Model):
         db_column="reserva_id",
         related_name="atencion",
     )
+    # Trabajadora que realizó la atención (se usa para la venta y la comisión).
+    # null=True solo para que la migración funcione con atenciones antiguas;
+    # el formulario de "Registrar atención" la pide siempre como obligatoria.
+    trabajador = models.ForeignKey(
+        Trabajador,
+        on_delete=models.PROTECT,
+        null=True,
+        db_column="trabajador_id",
+        related_name="atenciones",
+    )
     fecha = models.DateTimeField(auto_now_add=True)
     observacion = models.TextField(blank=True, null=True)
 

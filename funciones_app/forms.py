@@ -24,9 +24,10 @@ class AtencionForm(forms.ModelForm):
 
     class Meta:
         model = Atencion
-        fields = ["reserva", "observacion"]
+        fields = ["reserva", "trabajador", "observacion"]
         widgets = {
             "reserva": forms.Select(attrs={"class": "form-control"}),
+            "trabajador": forms.Select(attrs={"class": "form-control"}),
             "observacion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
 
