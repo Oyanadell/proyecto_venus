@@ -51,34 +51,52 @@
         </div>
         {% endif %}
 
+        <!-- Errores de validación que manda la vista (messages.error) -->
+        {% if messages %}
+        <div class="alert alert-danger border-0 shadow-sm rounded-4" role="alert" style="max-width: 560px;">
+            <strong>Revisa estos datos:</strong>
+            <ul class="mb-0">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
         <div class="card p-4 border-0 shadow-sm rounded-4 bg-white" style="max-width: 560px;">
             <!-- Este formulario sirve para agregar (servicio vacío) y para editar (servicio con datos).
-                 Sin "action", se envía a la misma dirección en la que estás. -->
+                 Sin "action", se envía a la misma dirección en la que estás.
+                 Los valores salen de "datos": así, si hay un error, no se pierde lo que se escribió. -->
             <form method="post">
                 {% csrf_token %}
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold" for="nombre">Nombre del servicio</label>
-                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej: Manicure semipermanente" value="{{ servicio.nombre }}" required>
+                    <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej: Manicure semipermanente" value="{{ datos.nombre }}" maxlength="100" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="descripcion">Descripción <span class="text-muted fw-normal">(opcional)</span></label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="2" placeholder="Ej: Incluye limado, cutícula y esmaltado">{{ datos.descripcion }}</textarea>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold" for="categoria">Categoría</label>
                     <select id="categoria" name="categoria" class="form-select">
-                        <option value="Manicure" {% if servicio.categoria == "Manicure" %}selected{% endif %}>Manicure</option>
-                        <option value="Pedicure" {% if servicio.categoria == "Pedicure" %}selected{% endif %}>Pedicure</option>
-                        <option value="Depilación" {% if servicio.categoria == "Depilación" %}selected{% endif %}>Depilación</option>
+                        {% for c in categorias %}
+                            <option value="{{ c }}" {% if datos.categoria == c %}selected{% endif %}>{{ c }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label class="form-label fw-semibold" for="duracion">Duración (minutos)</label>
-                        <input type="number" id="duracion" name="duracion" class="form-control" min="1" value="{{ servicio.duracion_minutos }}" required>
+                        <input type="number" id="duracion" name="duracion" class="form-control" min="1" step="1" value="{{ datos.duracion }}" required>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label fw-semibold" for="precio">Precio (CLP)</label>
-                        <input type="number" id="precio" name="precio" class="form-control" min="0" value="{{ servicio.precio_base|floatformat:"0" }}" required>
+                        <input type="number" id="precio" name="precio" class="form-control" min="1" step="1" value="{{ datos.precio }}" required>
                     </div>
                 </div>
 
@@ -86,7 +104,7 @@
                     <label class="form-label fw-semibold d-block">Locales donde se ofrece</label>
                     {% for s in sucursales %}
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="sucursales" value="{{ s.id }}" id="local{{ s.id }}" {% if s.id in ids_locales %}checked{% endif %}>
+                            <input class="form-check-input" type="checkbox" name="sucursales" value="{{ s.id }}" id="local{{ s.id }}" {% if s.id|stringformat:"s" in datos.sucursales %}checked{% endif %}>
                             <label class="form-check-label" for="local{{ s.id }}">{{ s.nombre }}</label>
                         </div>
                     {% empty %}
