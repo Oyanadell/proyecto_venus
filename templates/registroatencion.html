@@ -1,4 +1,4 @@
-{% load static %}
+{% load static l10n %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -88,7 +88,7 @@
                                                 type="checkbox"
                                                 name="servicios"
                                                 value="{{ servicio.id }}"
-                                                data-precio="{{ servicio.precio_base }}"
+                                                data-precio="{{ servicio.precio_base|unlocalize }}"
                                                 id="serv_{{ servicio.id }}"
                                                 {% if servicio.id|stringformat:"s" in servicios_ids_seleccionados %}checked{% endif %}
                                             >
@@ -98,7 +98,7 @@
                                         </div>
                                         <small class="text-muted d-block ms-4">{{ servicio.duracion_minutos }} min</small>
                                     </div>
-                                    <span class="fw-bold text-success">${{ servicio.precio_base }}</span>
+                                    <span class="fw-bold text-success">${{ servicio.precio_base|floatformat:"0g" }}</span>
                                 </div>
                             </div>
                             {% empty %}
