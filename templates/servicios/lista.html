@@ -37,6 +37,42 @@
         }
         .switch-estado.on { background: #f28cb1; }
         .switch-estado.on::after { left: 19px; }
+
+        /* Paginación con los colores rosados de la app (en vez del azul de Bootstrap) */
+        .pagination-antonia .page-link {
+            color: #d67ba8;
+            border-color: #f3d1dc;
+            background-color: #ffffff;
+        }
+        .pagination-antonia .page-link:hover {
+            color: #4a2e35;
+            background-color: #fce4ec;
+            border-color: #f3d1dc;
+        }
+        .pagination-antonia .page-link:focus {
+            box-shadow: 0 0 0 0.2rem rgba(242, 140, 177, 0.25);
+        }
+        .pagination-antonia .page-item.active .page-link {
+            color: #ffffff;
+            background-color: #f28cb1;
+            border-color: #f28cb1;
+        }
+        .pagination-antonia .page-item.disabled .page-link {
+            color: #c9a9b5;
+            background-color: #fff5f7;
+            border-color: #f3d1dc;
+        }
+
+        /* Selector "Mostrar X por página" */
+        .selector-por-pagina {
+            width: auto;
+            border-color: #f3d1dc;
+            color: #4a2e35;
+        }
+        .selector-por-pagina:focus {
+            border-color: #f28cb1;
+            box-shadow: 0 0 0 0.2rem rgba(242, 140, 177, 0.25);
+        }
     </style>
 </head>
 <body style="background-color: #fdf8f9;">
@@ -74,8 +110,15 @@
 
         <hr class="text-muted my-3">
 
-        <!-- Formulario de búsqueda: envía "buscar" y "categoria" a la vista -->
+        <!-- Mensajes de éxito (servicio agregado o actualizado) -->
+        {% for message in messages %}
+            <div class="alert alert-success border-0 shadow-sm rounded-4" role="alert">{{ message }}</div>
+        {% endfor %}
+
+        <!-- Formulario de búsqueda: envía "buscar" y "categoria" a la vista
+             (también manda "por_pagina" escondido, para no perder la cantidad elegida) -->
         <form method="get" class="row g-2 mb-3">
+            <input type="hidden" name="por_pagina" value="{{ por_pagina }}">
             <div class="col-md-6">
                 <input type="text" name="buscar" value="{{ buscar }}" class="form-control" placeholder="Buscar servicios por nombre...">
             </div>
@@ -152,6 +195,8 @@
                                 <form method="post" action="{% url 'cambiar_estado' %}" class="m-0">
                                     {% csrf_token %}
                                     <input type="hidden" name="id" value="{{ servicio.id }}">
+                                    <!-- Para volver a la misma página (y filtros) después de cambiar el estado -->
+                                    <input type="hidden" name="volver" value="{{ request.get_full_path }}">
                                     <button type="submit" class="switch-estado {% if servicio.activo %}on{% endif %}"
                                             title="{% if servicio.activo %}Desactivar{% else %}Activar{% endif %} servicio"></button>
                                 </form>
@@ -165,7 +210,55 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <small class="text-muted d-block mt-3">Mostrando {{ servicios|length }} servicios registrados</small>
+            <!-- Paginación: los enlaces conservan la búsqueda, la categoría y la cantidad por página -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3">
+                <small class="text-muted">
+                    Mostrando {{ servicios|length }} de {{ total_servicios }} servicios
+                    {% if pagina.paginator.num_pages > 1 %}(página {{ pagina.number }} de {{ pagina.paginator.num_pages }}){% endif %}
+                </small>
+
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <!-- Cuántos servicios mostrar por página. Al cambiarlo, el formulario se envía solo (onchange)
+                         y conserva la búsqueda y la categoría con campos escondidos. -->
+                    <form method="get" class="d-flex align-items-center gap-2 m-0">
+                        <input type="hidden" name="buscar" value="{{ buscar }}">
+                        <input type="hidden" name="categoria" value="{{ categoria }}">
+                        <label for="por_pagina" class="text-muted small mb-0 text-nowrap">Mostrar</label>
+                        <select id="por_pagina" name="por_pagina" class="form-select form-select-sm selector-por-pagina" onchange="this.form.submit()">
+                            {% for opcion in opciones_por_pagina %}
+                                <option value="{{ opcion }}" {% if opcion == por_pagina %}selected{% endif %}>{{ opcion }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="text-muted small text-nowrap">por página</span>
+                    </form>
+
+                {% if pagina.paginator.num_pages > 1 %}
+                <nav aria-label="Páginas de servicios">
+                    <ul class="pagination pagination-sm pagination-antonia mb-0">
+                        {% if pagina.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?buscar={{ buscar|urlencode }}&categoria={{ categoria|urlencode }}&por_pagina={{ por_pagina }}&pagina={{ pagina.previous_page_number }}">Anterior</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        {% for numero in pagina.paginator.page_range %}
+                            {% if numero == pagina.number %}
+                                <li class="page-item active" aria-current="page"><span class="page-link">{{ numero }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?buscar={{ buscar|urlencode }}&categoria={{ categoria|urlencode }}&por_pagina={{ por_pagina }}&pagina={{ numero }}">{{ numero }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if pagina.has_next %}
+                            <li class="page-item"><a class="page-link" href="?buscar={{ buscar|urlencode }}&categoria={{ categoria|urlencode }}&por_pagina={{ por_pagina }}&pagina={{ pagina.next_page_number }}">Siguiente</a></li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 

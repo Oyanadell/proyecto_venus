@@ -206,5 +206,107 @@
         3
       ]
     }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 1,
+    "fields": {
+      "sucursal": 1,
+      "rut": "11111111-1",
+      "nombre": "Ana",
+      "apellido": "Pérez",
+      "correo": "ana.prueba@antonia.test",
+      "telefono": "+56 9 0000 0001",
+      "especialidad": "Manicure",
+      "tipo_contrato": "40 horas",
+      "modalidad_pago": "Mixto",
+      "porcentaje_comision": 10,
+      "rol": "Trabajadora"
+    }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 2,
+    "fields": {
+      "sucursal": 1,
+      "rut": "22222222-2",
+      "nombre": "María",
+      "apellido": "González",
+      "correo": "maría.prueba@antonia.test",
+      "telefono": "+56 9 0000 0002",
+      "especialidad": "Depilación",
+      "tipo_contrato": "42 horas",
+      "modalidad_pago": "Comisión",
+      "porcentaje_comision": 20,
+      "rol": "Trabajadora"
+    }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 3,
+    "fields": {
+      "sucursal": 2,
+      "rut": "33333333-3",
+      "nombre": "Camila",
+      "apellido": "Rojas",
+      "correo": "camila.prueba@antonia.test",
+      "telefono": "+56 9 0000 0003",
+      "especialidad": "Pedicure",
+      "tipo_contrato": "40 horas",
+      "modalidad_pago": "Fijo",
+      "porcentaje_comision": 0,
+      "rol": "Trabajadora"
+    }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 4,
+    "fields": {
+      "sucursal": 2,
+      "rut": "44444444-4",
+      "nombre": "Valentina",
+      "apellido": "Soto",
+      "correo": "valentina.prueba@antonia.test",
+      "telefono": "+56 9 0000 0004",
+      "especialidad": "Manicure",
+      "tipo_contrato": "42 horas",
+      "modalidad_pago": "Mixto",
+      "porcentaje_comision": 10,
+      "rol": "Trabajadora"
+    }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 5,
+    "fields": {
+      "sucursal": 3,
+      "rut": "55555555-5",
+      "nombre": "Javiera",
+      "apellido": "Muñoz",
+      "correo": "javiera.prueba@antonia.test",
+      "telefono": "+56 9 0000 0005",
+      "especialidad": "Depilación",
+      "tipo_contrato": "40 horas",
+      "modalidad_pago": "Comisión",
+      "porcentaje_comision": 20,
+      "rol": "Trabajadora"
+    }
+  },
+  {
+    "model": "funciones_app.trabajador",
+    "pk": 6,
+    "fields": {
+      "sucursal": 3,
+      "rut": "66666666-6",
+      "nombre": "Fernanda",
+      "apellido": "Díaz",
+      "correo": "fernanda.prueba@antonia.test",
+      "telefono": "+56 9 0000 0006",
+      "especialidad": "Administración",
+      "tipo_contrato": "42 horas",
+      "modalidad_pago": "Fijo",
+      "porcentaje_comision": 0,
+      "rol": "Administradora"
+    }
   }
 ]

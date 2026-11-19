@@ -154,7 +154,8 @@ class Proveedor(models.Model):
     telefono = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return self.razon_social
+        # "razon_social" se eliminó en la migración 0004, por eso se muestra el RUT
+        return f"Proveedor {self.rut}"
 
     class Meta:
         db_table = "funciones_app_proveedor"
@@ -171,7 +172,7 @@ class FacturaCompra(models.Model):
     total_factura = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
-        return f"Compra #{self.id} - {self.proveedor.razon_social}"
+        return f"Compra #{self.id} - {self.proveedor}"
 
     class Meta:
         db_table = "funciones_app_facturacompra"

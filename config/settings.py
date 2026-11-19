@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-&=j5v5pk*)i2=00hk$zkg0dg3vyp&rq#1gh5shr^s4%u$56pv8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Apps del proyecto
@@ -114,7 +114,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Datos que aparecen en el voucher de venta
 VOUCHER_RAZON_SOCIAL = "Centro Estético Antonia (dato de prueba)"

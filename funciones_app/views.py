@@ -137,12 +137,8 @@ def RegistrarAtencion(request):
             return redirect('ventas_list')
     else:
         form = AtencionForm()
-
-        # SI NO HAY SERVICIOS CREADOS, CREAMOS UNOS DE PRUEBA AUTOMÁTICAMENTE
-        if not Servicio.objects.exists():
-            Servicio.objects.create(nombre="Manicure Permanente", precio_base=18500, duracion_minutos=45, descripcion="Esmaltado permanente con diseño base.")
-            Servicio.objects.create(nombre="Limpieza Facial Profunda", precio_base=35000, duracion_minutos=60, descripcion="Exfoliación e hidratación profunda.")
-            servicios = Servicio.objects.filter(activo=True).order_by("nombre")
+        # Los servicios de prueba ya no se crean aquí: se cargan con
+        # "python manage.py loaddata datos_prueba".
 
     context = {
         'form': form,
